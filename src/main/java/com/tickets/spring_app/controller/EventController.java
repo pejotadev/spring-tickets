@@ -2,11 +2,14 @@ package com.tickets.spring_app.controller;
 
 import com.tickets.spring_app.domain.event.Event;
 import com.tickets.spring_app.domain.event.EventRequestDTO;
+import com.tickets.spring_app.domain.event.EventResponseDTO;
 import com.tickets.spring_app.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/events")
@@ -26,8 +29,18 @@ public class EventController {
         @RequestParam ("eventUrl") String eventUrl,
         @RequestParam(value = "image", required = false) MultipartFile image) {
 
-        EventRequestDTO eventRequestDTO = new EventRequestDTO(title, description, date, city, street, remote, eventUrl, null, image);
+        EventRequestDTO eventRequestDTO = new EventRequestDTO(title, description, date, city, street, remote, eventUrl, image);
         Event newEvent = this.eventService.createEvent(eventRequestDTO);
         return ResponseEntity.ok(newEvent);
     }
+
+    @GetMapping
+    public ResponseEntity<List<EventResponseDTO>> getEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        List<EventResponseDTO> events = this.eventService.getUpcomingEvents(page, size);
+        return ResponseEntity.ok(events);
+    }
+
 }

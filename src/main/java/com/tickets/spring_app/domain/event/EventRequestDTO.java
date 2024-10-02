@@ -12,6 +12,5 @@ public record EventRequestDTO(
         String city,
         Boolean remote,
         String eventUrl,
-        String imageUrl,
         MultipartFile image
 ){}

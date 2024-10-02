@@ -3,16 +3,22 @@ package com.tickets.spring_app.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.tickets.spring_app.domain.event.Event;
 import com.tickets.spring_app.domain.event.EventRequestDTO;
+import com.tickets.spring_app.domain.event.EventResponseDTO;
 import com.tickets.spring_app.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -45,9 +51,26 @@ public class EventService {
 
         newEvent.setImgUrl(imageUrl);
 
-        eventRepository.save(newEvent);
+        this.eventRepository.save(newEvent);
 
         return newEvent;
+    }
+
+    public List<EventResponseDTO> getUpcomingEvents(int page, int size) {
+        Pageable pageable = Pageable.ofSize(size).withPage(page);
+        Page<Event> eventsPage = this.eventRepository.findUpcomingEvents(new Date(), pageable);
+
+        return eventsPage.map(event -> new EventResponseDTO(
+                event.getId(),
+                event.getTitle(),
+                event.getDescription(),
+                event.getDate().getTime(),
+                "",
+                "",
+                event.getRemote(),
+                event.getEventUrl(),
+                event.getImgUrl()
+                )).stream().toList();
     }
 
     private String uploadImage(MultipartFile image) {
