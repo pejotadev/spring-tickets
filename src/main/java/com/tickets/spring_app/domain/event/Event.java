@@ -29,6 +29,8 @@ public class Event {
 
     private String eventUrl;
 
+    private String imgUrl;
+
     private Boolean remote;
 
     private Date date;

@@ -17,10 +17,6 @@ public class Address {
 
     private String city;
 
-    private String zipCode;
-
-    private String country;
-
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
